@@ -23,7 +23,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 const holdingsKey = "PortfolioBuilderHoldings";
-const backendUrl = "https://portfolioserver.boutahar.dev";
+const backendUrl = "https://portfoliobackend.boutahar.dev";
 
 const useStyles = makeStyles({
   body: {
