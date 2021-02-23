@@ -23,7 +23,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 const holdingsKey = "PortfolioBuilderHoldings";
-const backendUrl = "http://portfoliobuilder.us-east-2.elasticbeanstalk.com";
+const backendUrl = "https://portfolioserver.boutahar.dev";
 
 const useStyles = makeStyles({
   body: {
