@@ -438,9 +438,6 @@ const App = ({ urlShareHash }: AppProps) => {
                     />
                   )}
                 />
-                <IconButton onClick={() => addQuote(tickerSearch)} edge="start">
-                  <AddCircleOutlineIcon />
-                </IconButton>
               </Box>
               <TextField
                 error={isNaN(totalValue) || totalValue < 0}
