@@ -12,6 +12,7 @@ import {
   Snackbar,
   makeStyles,
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -21,6 +22,9 @@ import randomColor from "randomcolor";
 import moment from "moment";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import { AutocResult } from "yahoo-finance2/api/modules/autoc";
+import { TrendingSymbol } from "yahoo-finance2/api/modules/trendingSymbols";
+import { RecommendationsBySymbolResponse } from "yahoo-finance2/api/modules/recommendationsBySymbol";
 
 const holdingsKey = "PortfolioBuilderHoldings";
 const backendUrl = "https://portfoliobackend.boutahar.dev";
@@ -47,6 +51,12 @@ const useStyles = makeStyles({
     lineHeight: 1.75,
     fontSize: "0.7rem",
   },
+  tickerSearchBar: {
+    width: 120,
+  },
+  portfolioValueBar: {
+    width: 160,
+  },
 });
 
 const App = ({ urlShareHash }: AppProps) => {
@@ -64,6 +74,7 @@ const App = ({ urlShareHash }: AppProps) => {
   );
   const [tickerSearch, setTickerSearch] = useState<string>("");
   const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+  const [autocompleteResults, setAutocompleteResults] = useState<string[]>([]);
 
   useEffect(() => {
     if (urlShareHash) {
@@ -78,7 +89,8 @@ const App = ({ urlShareHash }: AppProps) => {
         );
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    getAutocompleteValues();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchFromShareLink = (shareHash: string) => {
@@ -93,6 +105,11 @@ const App = ({ urlShareHash }: AppProps) => {
         );
       })
       .catch((err) => alert(err));
+  };
+
+  const updateTickerSearch = (updatedTickerSearch: string) => {
+    setTickerSearch(updatedTickerSearch);
+    getAutoCompleteTickers(updatedTickerSearch);
   };
 
   const insertHolding = (
@@ -160,7 +177,7 @@ const App = ({ urlShareHash }: AppProps) => {
         }
         let newHolding: Holding = {
           ticker: ticker,
-          name: response.data.longName,
+          name: response.data.longName || response.data.shortName,
           currency: response.data.financialCurrency,
           exchange: response.data.fullExchangeName,
           currentPrice: parseFloat(response.data.regularMarketPrice),
@@ -178,6 +195,7 @@ const App = ({ urlShareHash }: AppProps) => {
             moment().subtract(1, chosenTimePeriod),
             chosenInterval
           );
+          getAutocompleteValues(true);
         }
       })
       .catch((error) => {
@@ -198,6 +216,48 @@ const App = ({ urlShareHash }: AppProps) => {
           );
           insertHolding(ticker, ogHolding, true);
         }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getAutoCompleteTickers = (currentSearch: string) => {
+    axios
+      .get(`/autoc/${currentSearch}`)
+      .then((response) => {
+        let allQuotes: AutocResult[] = response.data.Result;
+        setAutocompleteResults(
+          allQuotes
+            .slice(0, Math.min(allQuotes.length + 1, 6))
+            .map((q) => q.symbol)
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getTrendingTickers = () => {
+    axios
+      .get(`/trending`)
+      .then((response) => {
+        let allQuotes: TrendingSymbol[] = response.data.quotes;
+        setAutocompleteResults(allQuotes.map((q) => q.symbol));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getRecommendedTickers = () => {
+    axios
+      .get(`/recommend/${Array.from(holdings.values()).pop()?.ticker}`)
+      .then((response) => {
+        let allSymbols: RecommendationsBySymbolResponse = response.data;
+        setAutocompleteResults(
+          allSymbols.recommendedSymbols.map((s) => s.symbol)
+        );
       })
       .catch((error) => {
         console.log(error);
@@ -237,6 +297,16 @@ const App = ({ urlShareHash }: AppProps) => {
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const getAutocompleteValues = (empty: boolean = false) => {
+    if (tickerSearch.length > 0 && !empty) {
+      getAutoCompleteTickers(tickerSearch);
+    } else if (holdings.size === 0) {
+      getTrendingTickers();
+    } else {
+      getRecommendedTickers();
+    }
   };
 
   const updatePortfolioPercentage = (ticker: string, percent: number) => {
@@ -325,25 +395,48 @@ const App = ({ urlShareHash }: AppProps) => {
                 <SiteLogo />
               </Box>
               <Box flexDirection="row">
-                <TextField
-                  id="standard-number"
-                  label="Add a stock"
-                  placeholder="Ticker"
+                <Autocomplete
+                  className={classes.tickerSearchBar}
+                  freeSolo
+                  disableClearable
+                  size="small"
                   value={tickerSearch}
-                  onChange={(e) =>
-                    setTickerSearch(e.target.value.toUpperCase())
+                  onChange={(event, value) =>
+                    updateTickerSearch(value.toUpperCase())
                   }
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      addQuote(tickerSearch);
-                      e.preventDefault();
-                    }
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">$</InputAdornment>
-                    ),
-                  }}
+                  options={autocompleteResults}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      id="standard-number"
+                      label="Add a stock"
+                      placeholder="Ticker"
+                      onChange={(e) =>
+                        updateTickerSearch(e.target.value.toUpperCase())
+                      }
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          addQuote(tickerSearch);
+                          e.preventDefault();
+                        }
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        ),
+                        endAdornment: (
+                          <IconButton
+                            onClick={() => addQuote(tickerSearch)}
+                            edge="start"
+                            size="small"
+                          >
+                            <AddCircleOutlineIcon fontSize="small" />
+                          </IconButton>
+                        ),
+                      }}
+                    />
+                  )}
                 />
                 <IconButton onClick={() => addQuote(tickerSearch)} edge="start">
                   <AddCircleOutlineIcon />
