@@ -224,7 +224,7 @@ const App = ({ urlShareHash }: AppProps) => {
 
   const getAutoCompleteTickers = (currentSearch: string) => {
     axios
-      .get(`/autoc/${currentSearch}`)
+      .get(`${backendUrl}/autoc/${currentSearch}`)
       .then((response) => {
         let allQuotes: AutocResult[] = response.data.Result;
         setAutocompleteResults(
@@ -240,7 +240,7 @@ const App = ({ urlShareHash }: AppProps) => {
 
   const getTrendingTickers = () => {
     axios
-      .get(`/trending`)
+      .get(`${backendUrl}/trending`)
       .then((response) => {
         let allQuotes: TrendingSymbol[] = response.data.quotes;
         setAutocompleteResults(allQuotes.map((q) => q.symbol));
@@ -252,7 +252,9 @@ const App = ({ urlShareHash }: AppProps) => {
 
   const getRecommendedTickers = () => {
     axios
-      .get(`/recommend/${Array.from(holdings.values()).pop()?.ticker}`)
+      .get(
+        `${backendUrl}/recommend/${Array.from(holdings.values()).pop()?.ticker}`
+      )
       .then((response) => {
         let allSymbols: RecommendationsBySymbolResponse = response.data;
         setAutocompleteResults(
