@@ -1,30 +1,12 @@
 import React, { useState, useEffect } from "react";
-import HoldingList from "./Components/HoldingList";
-import Charts from "./Components/Charts";
-import SiteLogo from "./Components/SiteLogo";
-import {
-  TextField,
-  IconButton,
-  ButtonGroup,
-  InputAdornment,
-  Box,
-  Typography,
-  Snackbar,
-  makeStyles,
-} from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import ShareIcon from "@material-ui/icons/Share";
+import HoldingList from "./Containers/HoldingList";
+import Charts from "./Containers/Charts";
+import PortfolioControls from "./Containers/PortfolioControls";
+import { Box, Typography, makeStyles } from "@material-ui/core";
 import { Holding, LocalStorageItem, AppProps } from "./types";
 import randomColor from "randomcolor";
 import moment from "moment";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
-import { AutocResult } from "yahoo-finance2/api/modules/autoc";
-import { TrendingSymbol } from "yahoo-finance2/api/modules/trendingSymbols";
-import { RecommendationsBySymbolResponse } from "yahoo-finance2/api/modules/recommendationsBySymbol";
 
 const holdingsKey = "PortfolioBuilderHoldings";
 const backendUrl = "https://portfoliobackend.boutahar.dev";
@@ -37,22 +19,12 @@ const useStyles = makeStyles({
   portfolioSection: {
     marginRight: "0.75rem",
   },
-  portfolioBar: {
-    marginBottom: "1rem",
-  },
   chartSection: {
     marginLeft: "0.75rem",
-  },
-  topBarActionButton: {
-    paddingLeft: 0,
-    paddingRight: 0,
   },
   buttonGroupOverline: {
     lineHeight: 1.75,
     fontSize: "0.7rem",
-  },
-  tickerSearchBar: {
-    width: 120,
   },
   portfolioValueBar: {
     width: 160,
@@ -61,9 +33,6 @@ const useStyles = makeStyles({
 
 const App = ({ urlShareHash }: AppProps) => {
   const classes = useStyles();
-  function Alert(props: AlertProps) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
 
   const [totalValue, setTotalValue] = useState<number>(0);
   const [holdings, setHoldings] = useState<Map<string, Holding>>(new Map());
@@ -72,9 +41,6 @@ const App = ({ urlShareHash }: AppProps) => {
   const [chosenInterval, setPriceInterval] = useState<"1mo" | "1d" | "1wk">(
     "1wk"
   );
-  const [tickerSearch, setTickerSearch] = useState<string>("");
-  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
-  const [autocompleteResults, setAutocompleteResults] = useState<string[]>([]);
 
   useEffect(() => {
     if (urlShareHash) {
@@ -89,7 +55,6 @@ const App = ({ urlShareHash }: AppProps) => {
         );
       }
     }
-    getAutocompleteValues();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -105,11 +70,6 @@ const App = ({ urlShareHash }: AppProps) => {
         );
       })
       .catch((err) => alert(err));
-  };
-
-  const updateTickerSearch = (updatedTickerSearch: string) => {
-    setTickerSearch(updatedTickerSearch);
-    getAutoCompleteTickers(updatedTickerSearch);
   };
 
   const insertHolding = (
@@ -189,13 +149,11 @@ const App = ({ urlShareHash }: AppProps) => {
           displayColor: randomColor({ luminosity: "bright" }),
         };
         if (insertHolding(ticker, newHolding, forRefresh)) {
-          setTickerSearch("");
           getHistoricalData(
             newHolding,
             moment().subtract(1, chosenTimePeriod),
             chosenInterval
           );
-          getAutocompleteValues(true);
         }
       })
       .catch((error) => {
@@ -216,50 +174,6 @@ const App = ({ urlShareHash }: AppProps) => {
           );
           insertHolding(ticker, ogHolding, true);
         }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getAutoCompleteTickers = (currentSearch: string) => {
-    axios
-      .get(`${backendUrl}/autoc/${currentSearch}`)
-      .then((response) => {
-        let allQuotes: AutocResult[] = response.data.Result;
-        setAutocompleteResults(
-          allQuotes
-            .slice(0, Math.min(allQuotes.length + 1, 6))
-            .map((q) => q.symbol)
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getTrendingTickers = () => {
-    axios
-      .get(`${backendUrl}/trending`)
-      .then((response) => {
-        let allQuotes: TrendingSymbol[] = response.data.quotes;
-        setAutocompleteResults(allQuotes.map((q) => q.symbol));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getRecommendedTickers = () => {
-    axios
-      .get(
-        `${backendUrl}/recommend/${Array.from(holdings.values()).pop()?.ticker}`
-      )
-      .then((response) => {
-        let allSymbols: RecommendationsBySymbolResponse = response.data;
-        setAutocompleteResults(
-          allSymbols.recommendedSymbols.map((s) => s.symbol)
-        );
       })
       .catch((error) => {
         console.log(error);
@@ -301,16 +215,6 @@ const App = ({ urlShareHash }: AppProps) => {
       });
   };
 
-  const getAutocompleteValues = (empty: boolean = false) => {
-    if (tickerSearch.length > 0 && !empty) {
-      getAutoCompleteTickers(tickerSearch);
-    } else if (holdings.size === 0) {
-      getTrendingTickers();
-    } else {
-      getRecommendedTickers();
-    }
-  };
-
   const updatePortfolioPercentage = (ticker: string, percent: number) => {
     let ogHolding = holdings.get(ticker);
     if (ogHolding) {
@@ -342,28 +246,6 @@ const App = ({ urlShareHash }: AppProps) => {
   //   );
   // };
 
-  const createShareLink = () => {
-    let newUUID = uuidv4();
-    axios
-      .post(
-        `${backendUrl}/share`,
-        {
-          portfolio: Array.from(holdings.values()).map((h) => ({
-            ticker: h.ticker,
-            portfolioPercentage: h.portfolioPercentage,
-          })),
-        },
-        { params: { shareHash: newUUID } }
-      )
-      .then((response) => {
-        let shareUrl = `${window.location.host}/share/${newUUID}`;
-        navigator.clipboard
-          .writeText(shareUrl)
-          .then(() => setSnackbarOpen(true));
-      })
-      .catch((err) => alert(`Could not fetch portfolio from DynamoDB. ${err}`));
-  };
-
   return (
     <Box
       className={classes.body}
@@ -385,93 +267,13 @@ const App = ({ urlShareHash }: AppProps) => {
             </Typography>
           </Box>
           <Box>
-            <Box
-              className={classes.portfolioBar}
-              display="flex"
-              flexDirection="row"
-              justifyContent="space-between"
-              flex={1}
-              width={1}
-            >
-              <Box>
-                <SiteLogo />
-              </Box>
-              <Box flexDirection="row">
-                <Autocomplete
-                  className={classes.tickerSearchBar}
-                  freeSolo
-                  disableClearable
-                  size="small"
-                  value={tickerSearch}
-                  onChange={(event, value) =>
-                    updateTickerSearch(value.toUpperCase())
-                  }
-                  options={autocompleteResults}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      id="standard-number"
-                      label="Add a stock"
-                      placeholder="Ticker"
-                      onChange={(e) =>
-                        updateTickerSearch(e.target.value.toUpperCase())
-                      }
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          addQuote(tickerSearch);
-                          e.preventDefault();
-                        }
-                      }}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start">$</InputAdornment>
-                        ),
-                        endAdornment: (
-                          <IconButton
-                            onClick={() => addQuote(tickerSearch)}
-                            edge="start"
-                            size="small"
-                          >
-                            <AddCircleOutlineIcon fontSize="small" />
-                          </IconButton>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </Box>
-              <TextField
-                error={isNaN(totalValue) || totalValue < 0}
-                label="Total Portfolio Value"
-                type="number"
-                value={totalValue}
-                onChange={(e) => setTotalValue(parseFloat(e.target.value))}
-                InputProps={{
-                  inputProps: { min: 0 },
-                  startAdornment: (
-                    <InputAdornment position="start">$</InputAdornment>
-                  ),
-                }}
-                helperText={
-                  isNaN(totalValue) || totalValue < 0 ? "Invalid Value" : ""
-                }
-              />
-              <ButtonGroup aria-label="top bar actions">
-                <IconButton
-                  className={classes.topBarActionButton}
-                  onClick={() => createShareLink()}
-                >
-                  <ShareIcon />
-                </IconButton>
-                <IconButton
-                  className={classes.topBarActionButton}
-                  onClick={() => updateAllQuotes()}
-                >
-                  <RefreshIcon />
-                </IconButton>
-              </ButtonGroup>
-            </Box>
+            <PortfolioControls
+              holdings={holdings}
+              totalValue={totalValue}
+              setTotalValue={setTotalValue}
+              addQuote={addQuote}
+              updateAllQuotes={updateAllQuotes}
+            />
           </Box>
         </Box>
         <Box>
@@ -495,15 +297,6 @@ const App = ({ urlShareHash }: AppProps) => {
           refreshAllHistoricalData={refreshAllHistoricalData}
         />
       </Box>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert onClose={() => setSnackbarOpen(false)} severity="success">
-          Share link copied to clipboard!
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };
