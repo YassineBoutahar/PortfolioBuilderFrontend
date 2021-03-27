@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { config } from "config";
 import {
   Button,
   Dialog,
@@ -6,15 +7,25 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Checkbox,
+  FormControlLabel,
+  Typography,
 } from "@material-ui/core";
 
+const hideDisclaimerKey = config.localStorageKeys.disclaimer;
+
 const DisclaimerDialog = () => {
-  const [open, setOpen] = useState<boolean>(true);
+  const userHidePreference: string | null = window.localStorage.getItem(
+    hideDisclaimerKey
+  );
+  const [open, setOpen] = useState<boolean>(!userHidePreference);
 
   return (
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
+      disableBackdropClick
+      disableEscapeKeyDown
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
@@ -29,7 +40,18 @@ const DisclaimerDialog = () => {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpen(false)} autoFocus>
+        <FormControlLabel
+          value="hideDisclaimerCheckbox"
+          control={<Checkbox color="default" />}
+          label={<Typography variant="subtitle2">Don't show again</Typography>}
+          labelPlacement="start"
+          onChange={(event, checked) => {
+            checked
+              ? window.localStorage.setItem(hideDisclaimerKey, "true")
+              : window.localStorage.removeItem(hideDisclaimerKey);
+          }}
+        />
+        <Button onClick={() => setOpen(false)} size="large">
           Agree
         </Button>
       </DialogActions>

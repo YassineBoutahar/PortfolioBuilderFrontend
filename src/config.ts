@@ -1,6 +1,7 @@
 export const config = {
   serverUrl: "https://portfoliobackend.boutahar.dev",
   localStorageKeys: {
-    holdings: "PortfolioBuilderHoldings",
+    holdings: "portfoliobuilder.holdings",
+    disclaimer: "portfoliobuilder.hidedisclaimer",
   },
 };
