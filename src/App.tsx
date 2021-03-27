@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import HoldingList from "./Containers/HoldingList";
-import Charts from "./Containers/Charts";
-import PortfolioControls from "./Containers/PortfolioControls";
+import { DisclaimerDialog } from "components";
+import { HoldingList, Charts, PortfolioControls } from "containers";
+import { Holding, LocalStorageItem, AppProps } from "types";
 import { Box, makeStyles } from "@material-ui/core";
-import { Holding, LocalStorageItem, AppProps } from "./types";
 import randomColor from "randomcolor";
 import moment from "moment";
 import axios from "axios";
-import DisclaimerDialog from "./Components/DisclaimerDialog";
 
 const holdingsKey = "PortfolioBuilderHoldings";
 const backendUrl = "https://portfoliobackend.boutahar.dev";
