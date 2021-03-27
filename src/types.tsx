@@ -57,6 +57,14 @@ export interface ChartsProps {
   ) => void;
 }
 
+export interface LineChartProps {
+  holdings: Map<string, Holding>;
+}
+
+export interface PolarChartProps {
+  holdings: Holding[];
+}
+
 export interface PriceChangeProps {
   currentPrice: number;
   previousPrice: number;
