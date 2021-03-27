@@ -1,7 +1,7 @@
 import React from "react";
 import { SingleHolding } from "components";
 import { Holding, HoldingListProps } from "types";
-import { List, Box, Typography } from "@material-ui/core";
+import { Box, Typography } from "@material-ui/core";
 
 const HoldingList = ({
   holdings,
@@ -12,16 +12,12 @@ const HoldingList = ({
   getAvailablePercentage,
 }: HoldingListProps) => {
   return (
-    <List
-      dense
-      subheader={
-        <Box textAlign="center" marginBottom="-0.4rem">
-          <Typography variant="overline" color="textSecondary">
-            {holdings.length > 0 ? "Your stocks" : ""}
-          </Typography>
-        </Box>
-      }
-    >
+    <>
+      <Box textAlign="center" marginBottom="-0.4rem">
+        <Typography variant="overline" color="textSecondary">
+          {holdings.length > 0 ? "Your stocks" : ""}
+        </Typography>
+      </Box>
       {holdings.map((holding: Holding) => {
         return (
           <SingleHolding
@@ -34,7 +30,7 @@ const HoldingList = ({
           />
         );
       })}
-    </List>
+    </>
   );
 };
 
