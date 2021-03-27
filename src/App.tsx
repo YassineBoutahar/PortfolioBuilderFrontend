@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { DisclaimerDialog } from "components";
 import { HoldingList, Charts, PortfolioControls } from "containers";
 import { Holding, LocalStorageItem, AppProps } from "types";
+import { config } from "config";
 import { Box, makeStyles } from "@material-ui/core";
 import randomColor from "randomcolor";
 import moment from "moment";
 import axios from "axios";
 
-const holdingsKey = "PortfolioBuilderHoldings";
-const backendUrl = "https://portfoliobackend.boutahar.dev";
+const holdingsKey = config.localStorageKeys.holdings;
+const backendUrl = config.serverUrl;
 
 const useStyles = makeStyles({
   root: {
