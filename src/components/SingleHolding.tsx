@@ -14,7 +14,6 @@ import {
   useTheme,
   Grid,
   Divider,
-  useMediaQuery,
 } from "@material-ui/core";
 import LaunchIcon from "@material-ui/icons/Launch";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";

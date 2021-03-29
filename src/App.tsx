@@ -256,45 +256,48 @@ const App = ({ urlShareHash }: AppProps) => {
   );
 
   return (
-    <Grid
-      container
-      className={desktop ? classes.desktopRoot : classes.mobileRoot}
-      direction={desktop ? "row" : "column"}
-      spacing={2}
-      wrap="nowrap"
-    >
-      <Grid item xs={desktop ? 6 : "auto"}>
-        <Grid container direction="column">
-          <Grid item xs="auto">
-            <PortfolioControls
-              desktop={desktop}
-              holdings={holdings}
-              totalValue={totalValue}
-              setTotalValue={setTotalValue}
-              addQuote={addQuote}
-              updateAllQuotes={updateAllQuotes}
-            />
-          </Grid>
-          {desktop && (
+    <>
+      <DisclaimerDialog />
+      <Grid
+        container
+        className={desktop ? classes.desktopRoot : classes.mobileRoot}
+        direction={desktop ? "row" : "column"}
+        spacing={2}
+        wrap="nowrap"
+      >
+        <Grid item xs={desktop ? 6 : "auto"}>
+          <Grid container direction="column">
             <Grid item xs="auto">
-              {holdingsListRender}
+              <PortfolioControls
+                desktop={desktop}
+                holdings={holdings}
+                totalValue={totalValue}
+                setTotalValue={setTotalValue}
+                addQuote={addQuote}
+                updateAllQuotes={updateAllQuotes}
+              />
             </Grid>
-          )}
+            {desktop && (
+              <Grid item xs="auto">
+                {holdingsListRender}
+              </Grid>
+            )}
+          </Grid>
+        </Grid>
+        <Grid item xs={desktop ? 6 : "auto"}>
+          <DataView
+            desktop={desktop}
+            holdings={holdings}
+            holdingsList={holdingsListRender}
+            timePeriod={chosenTimePeriod}
+            setTimePeriod={setTimePeriod}
+            interval={chosenInterval}
+            setPriceInterval={setPriceInterval}
+            refreshAllHistoricalData={refreshAllHistoricalData}
+          />
         </Grid>
       </Grid>
-      <Grid item xs={desktop ? 6 : "auto"}>
-        <DataView
-          desktop={desktop}
-          holdings={holdings}
-          holdingsList={holdingsListRender}
-          timePeriod={chosenTimePeriod}
-          setTimePeriod={setTimePeriod}
-          interval={chosenInterval}
-          setPriceInterval={setPriceInterval}
-          refreshAllHistoricalData={refreshAllHistoricalData}
-        />
-      </Grid>
-    </Grid>
+    </>
   );
 };
 

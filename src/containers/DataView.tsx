@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { LineChart, PolarChart } from "components";
-import { HoldingList } from "containers";
-import { DataViewProps, Holding } from "types";
-import { Grid, Box, Typography, makeStyles, useTheme } from "@material-ui/core";
+import { DataViewProps } from "types";
+import { Grid, Box, Typography, makeStyles } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 
 import PieChartIcon from "@material-ui/icons/PieChart";
@@ -43,7 +42,6 @@ const DataView = ({
   refreshAllHistoricalData,
 }: DataViewProps) => {
   const classes = useStyles();
-  const theme = useTheme();
 
   const [viewType, setViewType] = useState<"polar" | "line" | "holdings">(
     desktop ? "polar" : "holdings"
