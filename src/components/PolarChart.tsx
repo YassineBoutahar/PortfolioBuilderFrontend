@@ -2,7 +2,7 @@ import { PolarChartProps } from "types";
 import { useTheme } from "@material-ui/core";
 import { Polar } from "react-chartjs-2";
 
-const Charts = ({ holdings }: PolarChartProps) => {
+const Charts = ({ desktop, holdingsArray }: PolarChartProps) => {
   const theme = useTheme();
 
   return (
@@ -10,17 +10,17 @@ const Charts = ({ holdings }: PolarChartProps) => {
       data={{
         datasets: [
           {
-            data: holdings.map((h) => h.portfolioPercentage),
-            backgroundColor: holdings.map((h) => h.displayColor),
+            data: holdingsArray.map((h) => h.portfolioPercentage),
+            backgroundColor: holdingsArray.map((h) => h.displayColor),
           },
         ],
 
         // These labels appear in the legend and in the tooltips when hovering different arcs
-        labels: holdings.map((h) => h.ticker),
+        labels: holdingsArray.map((h) => h.ticker),
       }}
       options={{
         title: {
-          display: false,
+          display: !desktop,
           text: "Portfolio Breakdown",
         },
         legend: {

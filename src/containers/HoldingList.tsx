@@ -1,10 +1,11 @@
 import React from "react";
 import { SingleHolding } from "components";
 import { Holding, HoldingListProps } from "types";
-import { Box, Typography } from "@material-ui/core";
+import { List, Box, Typography } from "@material-ui/core";
 
 const HoldingList = ({
-  holdings,
+  desktop,
+  holdingsArray,
   portfolioValue,
   insertHolding,
   deleteHolding,
@@ -12,15 +13,20 @@ const HoldingList = ({
   getAvailablePercentage,
 }: HoldingListProps) => {
   return (
-    <>
-      <Box textAlign="center" marginBottom="-0.4rem">
-        <Typography variant="overline" color="textSecondary">
-          {holdings.length > 0 ? "Your stocks" : ""}
-        </Typography>
-      </Box>
-      {holdings.map((holding: Holding) => {
+    <List
+      dense
+      subheader={
+        <Box textAlign="center" marginBottom="-0.4rem">
+          <Typography variant="overline" color="textSecondary">
+            {holdingsArray.length > 0 ? "Your stocks" : ""}
+          </Typography>
+        </Box>
+      }
+    >
+      {holdingsArray.map((holding: Holding) => {
         return (
           <SingleHolding
+            desktop={desktop}
             holding={holding}
             portfolioValue={portfolioValue}
             insertHolding={insertHolding}
@@ -30,7 +36,7 @@ const HoldingList = ({
           />
         );
       })}
-    </>
+    </List>
   );
 };
 

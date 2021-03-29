@@ -8,7 +8,11 @@ const green = "#008100";
 const red = "#f00";
 const grey = "#787878";
 
-const PriceChange = ({ currentPrice, previousPrice }: PriceChangeProps) => {
+const PriceChange = ({
+  mobile = false,
+  currentPrice,
+  previousPrice,
+}: PriceChangeProps) => {
   const getChangeText = () => {
     let sign: string = currentPrice >= previousPrice ? "+" : "-";
 
@@ -21,9 +25,11 @@ const PriceChange = ({ currentPrice, previousPrice }: PriceChangeProps) => {
       return `Retrieval error`;
     }
 
-    return `$${currentPrice.toFixed(2)} ${sign}${difference.toFixed(
-      2
-    )} (${sign}${percentChange.toFixed(2)}%)`;
+    return mobile
+      ? `$${currentPrice.toFixed(2)}`
+      : `$${currentPrice.toFixed(2)} ${sign}${difference.toFixed(
+          2
+        )} (${sign}${percentChange.toFixed(2)}%)`;
   };
 
   return (

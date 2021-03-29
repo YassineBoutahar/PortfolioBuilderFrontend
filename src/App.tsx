@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { DisclaimerDialog } from "components";
-import { HoldingList, Charts, PortfolioControls } from "containers";
+import { HoldingList, DataView, PortfolioControls } from "containers";
 import { Holding, LocalStorageItem, AppProps } from "types";
 import { config } from "config";
-import { Box, makeStyles } from "@material-ui/core";
+import { Grid, makeStyles, useMediaQuery } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 import randomColor from "randomcolor";
 import moment from "moment";
 import axios from "axios";
@@ -12,15 +13,13 @@ const holdingsKey = config.localStorageKeys.holdings;
 const backendUrl = config.serverUrl;
 
 const useStyles = makeStyles({
-  root: {
-    marginTop: "0.25rem",
+  desktopRoot: {
+    margin: "0.25rem 1.25rem 0 1.25rem",
     height: "100%",
   },
-  portfolioSection: {
-    marginRight: "0.75rem",
-  },
-  chartSection: {
-    marginLeft: "0.75rem",
+  mobileRoot: {
+    margin: "0.25rem 0.25rem 0 0.25rem",
+    height: "100%",
   },
   portfolioValueBar: {
     width: 160,
@@ -29,7 +28,9 @@ const useStyles = makeStyles({
 
 const App = ({ urlShareHash }: AppProps) => {
   const classes = useStyles();
-
+  const theme = useTheme();
+  const desktop = useMediaQuery(theme.breakpoints.up("lg"));
+  console.log(desktop);
   const [totalValue, setTotalValue] = useState<number>(0);
   const [holdings, setHoldings] = useState<Map<string, Holding>>(new Map());
   // const [remainingPercent, setRemainingPercent] = useState<number>(100);
@@ -242,47 +243,57 @@ const App = ({ urlShareHash }: AppProps) => {
   //   );
   // };
 
+  const holdingsListRender = (
+    <HoldingList
+      desktop={desktop}
+      holdingsArray={Array.from(holdings.values())}
+      portfolioValue={totalValue}
+      insertHolding={insertHolding}
+      deleteHolding={deleteHolding}
+      updatePortfolioPercentage={updatePortfolioPercentage}
+      getAvailablePercentage={getAvailablePercentage}
+    />
+  );
+
   return (
-    <Box
-      className={classes.root}
-      display="flex"
-      flexDirection="row"
-      flex={1}
-      width={1}
+    <Grid
+      container
+      className={desktop ? classes.desktopRoot : classes.mobileRoot}
+      direction={desktop ? "row" : "column"}
+      spacing={2}
+      wrap="nowrap"
     >
-      <DisclaimerDialog />
-      <Box width={1} className={classes.portfolioSection}>
-        <Box>
-          <PortfolioControls
-            holdings={holdings}
-            totalValue={totalValue}
-            setTotalValue={setTotalValue}
-            addQuote={addQuote}
-            updateAllQuotes={updateAllQuotes}
-          />
-        </Box>
-        <Box>
-          <HoldingList
-            holdings={Array.from(holdings.values())}
-            portfolioValue={totalValue}
-            insertHolding={insertHolding}
-            deleteHolding={deleteHolding}
-            updatePortfolioPercentage={updatePortfolioPercentage}
-            getAvailablePercentage={getAvailablePercentage}
-          />
-        </Box>
-      </Box>
-      <Box className={classes.chartSection} width={1}>
-        <Charts
+      <Grid item xs={desktop ? 6 : "auto"}>
+        <Grid container direction="column">
+          <Grid item xs="auto">
+            <PortfolioControls
+              holdings={holdings}
+              totalValue={totalValue}
+              setTotalValue={setTotalValue}
+              addQuote={addQuote}
+              updateAllQuotes={updateAllQuotes}
+            />
+          </Grid>
+          {desktop && (
+            <Grid item xs="auto">
+              {holdingsListRender}
+            </Grid>
+          )}
+        </Grid>
+      </Grid>
+      <Grid item xs={desktop ? 6 : "auto"}>
+        <DataView
+          desktop={desktop}
           holdings={holdings}
+          holdingsList={holdingsListRender}
           timePeriod={chosenTimePeriod}
           setTimePeriod={setTimePeriod}
           interval={chosenInterval}
           setPriceInterval={setPriceInterval}
           refreshAllHistoricalData={refreshAllHistoricalData}
         />
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 

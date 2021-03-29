@@ -6,7 +6,7 @@ import { ChartDataSets, ChartPoint } from "chart.js";
 import moment from "moment";
 import { HistoricalResult } from "yahoo-finance2/api/modules/historical";
 
-const Charts = ({ holdings }: LineChartProps) => {
+const Charts = ({ desktop, holdings }: LineChartProps) => {
   const theme = useTheme();
 
   const getChartDataSets = () => {
@@ -101,7 +101,7 @@ const Charts = ({ holdings }: LineChartProps) => {
       }}
       options={{
         title: {
-          display: false,
+          display: !desktop,
           text: "Historical Portfolio Performance",
         },
         legend: {

@@ -14,7 +14,8 @@ export interface Holding {
 }
 
 export interface HoldingListProps {
-  holdings: Holding[];
+  desktop: boolean;
+  holdingsArray: Holding[];
   portfolioValue: number;
   insertHolding: (
     ticker: string,
@@ -27,6 +28,7 @@ export interface HoldingListProps {
 }
 
 export interface SingleHoldingProps {
+  desktop: boolean;
   holding: Holding;
   portfolioValue: number;
   insertHolding: (
@@ -44,7 +46,9 @@ export interface LocalStorageItem {
   portfolioPercentage: number;
 }
 
-export interface ChartsProps {
+export interface DataViewProps {
+  desktop: boolean;
+  holdingsList?: React.ReactNode;
   holdings: Map<string, Holding>;
   timePeriod: "y" | "M" | "w";
   setTimePeriod: Dispatch<SetStateAction<"y" | "M" | "w">>;
@@ -58,14 +62,17 @@ export interface ChartsProps {
 }
 
 export interface LineChartProps {
+  desktop: boolean;
   holdings: Map<string, Holding>;
 }
 
 export interface PolarChartProps {
-  holdings: Holding[];
+  desktop: boolean;
+  holdingsArray: Holding[];
 }
 
 export interface PriceChangeProps {
+  mobile?: boolean;
   currentPrice: number;
   previousPrice: number;
 }
