@@ -87,9 +87,10 @@ export interface AppProps {
 }
 
 export interface PortfolioControlsProps {
+  desktop: boolean;
   holdings: Map<string, Holding>;
-  totalValue: number;
-  setTotalValue: Dispatch<SetStateAction<number>>;
+  totalValue: number | null;
+  setTotalValue: Dispatch<SetStateAction<number | null>>;
   addQuote: (ticker: string) => void;
   updateAllQuotes: () => void;
 }

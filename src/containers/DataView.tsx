@@ -135,7 +135,7 @@ const DataView = ({
                   {
                     polar: "Portfolio Breakdown",
                     line: "Historical Portfolio Performance",
-                    holdings: "Holdings",
+                    holdings: desktop ? "Portfolio Breakdown" : "Holdings",
                   }[viewType]
                 }
               </Typography>

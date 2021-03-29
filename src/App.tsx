@@ -31,7 +31,7 @@ const App = ({ urlShareHash }: AppProps) => {
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up("lg"));
   console.log(desktop);
-  const [totalValue, setTotalValue] = useState<number>(0);
+  const [totalValue, setTotalValue] = useState<number | null>(null);
   const [holdings, setHoldings] = useState<Map<string, Holding>>(new Map());
   // const [remainingPercent, setRemainingPercent] = useState<number>(100);
   const [chosenTimePeriod, setTimePeriod] = useState<"y" | "M" | "w">("y");
@@ -247,7 +247,7 @@ const App = ({ urlShareHash }: AppProps) => {
     <HoldingList
       desktop={desktop}
       holdingsArray={Array.from(holdings.values())}
-      portfolioValue={totalValue}
+      portfolioValue={totalValue || 0}
       insertHolding={insertHolding}
       deleteHolding={deleteHolding}
       updatePortfolioPercentage={updatePortfolioPercentage}
@@ -267,6 +267,7 @@ const App = ({ urlShareHash }: AppProps) => {
         <Grid container direction="column">
           <Grid item xs="auto">
             <PortfolioControls
+              desktop={desktop}
               holdings={holdings}
               totalValue={totalValue}
               setTotalValue={setTotalValue}
