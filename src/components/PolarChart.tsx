@@ -2,7 +2,7 @@ import { PolarChartProps } from "types";
 import { useTheme } from "@material-ui/core";
 import { Polar } from "react-chartjs-2";
 
-const Charts = ({ desktop, holdingsArray }: PolarChartProps) => {
+const Charts = ({ screenSize, holdingsArray }: PolarChartProps) => {
   const theme = useTheme();
 
   return (
@@ -20,7 +20,7 @@ const Charts = ({ desktop, holdingsArray }: PolarChartProps) => {
       }}
       options={{
         title: {
-          display: !desktop,
+          display: screenSize < 3,
           text: "Portfolio Breakdown",
         },
         legend: {

@@ -29,8 +29,16 @@ const useStyles = makeStyles({
 const App = ({ urlShareHash }: AppProps) => {
   const classes = useStyles();
   const theme = useTheme();
-  const desktop = useMediaQuery(theme.breakpoints.up("lg"));
-  console.log(desktop);
+  let screenSize: number = 0;
+  const xl = useMediaQuery(theme.breakpoints.up("xl"));
+  const lg = useMediaQuery(theme.breakpoints.up("lg"));
+  const md = useMediaQuery(theme.breakpoints.up("md"));
+  const sm = useMediaQuery(theme.breakpoints.up("sm"));
+  if (xl) screenSize = 4;
+  else if (lg) screenSize = 3;
+  else if (md) screenSize = 2;
+  else if (sm) screenSize = 1;
+  console.log(screenSize);
   const [totalValue, setTotalValue] = useState<number | null>(null);
   const [holdings, setHoldings] = useState<Map<string, Holding>>(new Map());
   // const [remainingPercent, setRemainingPercent] = useState<number>(100);
@@ -245,7 +253,7 @@ const App = ({ urlShareHash }: AppProps) => {
 
   const holdingsListRender = (
     <HoldingList
-      desktop={desktop}
+      screenSize={screenSize}
       holdingsArray={Array.from(holdings.values())}
       portfolioValue={totalValue || 0}
       insertHolding={insertHolding}
@@ -260,16 +268,16 @@ const App = ({ urlShareHash }: AppProps) => {
       <DisclaimerDialog />
       <Grid
         container
-        className={desktop ? classes.desktopRoot : classes.mobileRoot}
-        direction={desktop ? "row" : "column"}
+        className={screenSize >= 3 ? classes.desktopRoot : classes.mobileRoot}
+        direction={screenSize >= 3 ? "row" : "column"}
         spacing={2}
         wrap="nowrap"
       >
-        <Grid item xs={desktop ? 6 : "auto"}>
+        <Grid item xs={screenSize >= 3 ? 6 : "auto"}>
           <Grid container direction="column">
             <Grid item xs="auto">
               <PortfolioControls
-                desktop={desktop}
+                screenSize={screenSize}
                 holdings={holdings}
                 totalValue={totalValue}
                 setTotalValue={setTotalValue}
@@ -277,16 +285,16 @@ const App = ({ urlShareHash }: AppProps) => {
                 updateAllQuotes={updateAllQuotes}
               />
             </Grid>
-            {desktop && (
+            {screenSize >= 3 && (
               <Grid item xs="auto">
                 {holdingsListRender}
               </Grid>
             )}
           </Grid>
         </Grid>
-        <Grid item xs={desktop ? 6 : "auto"}>
+        <Grid item xs={screenSize >= 3 ? 6 : "auto"}>
           <DataView
-            desktop={desktop}
+            screenSize={screenSize}
             holdings={holdings}
             holdingsList={holdingsListRender}
             timePeriod={chosenTimePeriod}

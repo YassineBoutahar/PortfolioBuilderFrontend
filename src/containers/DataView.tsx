@@ -32,7 +32,7 @@ const useStyles = makeStyles({
 });
 
 const DataView = ({
-  desktop,
+  screenSize,
   holdingsList = <></>,
   holdings,
   timePeriod,
@@ -44,7 +44,7 @@ const DataView = ({
   const classes = useStyles();
 
   const [viewType, setViewType] = useState<"polar" | "line" | "holdings">(
-    desktop ? "polar" : "holdings"
+    "polar"
   );
 
   const handleViewChange = (
@@ -93,7 +93,7 @@ const DataView = ({
                   variant="overline"
                   color="textSecondary"
                 >
-                  {desktop ? "Chart Type" : "Data View"}
+                  {screenSize >= 3 ? "Chart Type" : "Data View"}
                 </Typography>
               </Grid>
               <Grid item xs="auto">
@@ -104,7 +104,7 @@ const DataView = ({
                   hidden={false}
                   aria-label="Chart style"
                 >
-                  {!desktop && (
+                  {screenSize < 3 && (
                     <ToggleButton value="holdings" aria-label="holdings list">
                       <ListIcon fontSize="small" />
                     </ToggleButton>
@@ -120,7 +120,7 @@ const DataView = ({
             </Grid>
           </Grid>
 
-          {desktop && (
+          {screenSize >= 3 && (
             <Grid item xs="auto">
               <Typography
                 className={classes.chartTitle}
@@ -133,7 +133,7 @@ const DataView = ({
                   {
                     polar: "Portfolio Breakdown",
                     line: "Historical Portfolio Performance",
-                    holdings: desktop ? "Portfolio Breakdown" : "Holdings",
+                    holdings: "Holdings",
                   }[viewType]
                 }
               </Typography>
@@ -155,7 +155,7 @@ const DataView = ({
                     <Grid item xs="auto">
                       <Typography
                         className={
-                          desktop
+                          screenSize >= 3
                             ? classes.buttonGroupOverline
                             : classes.buttonGroupOverlineSmall
                         }
@@ -174,31 +174,37 @@ const DataView = ({
                         aria-label="Start date"
                       >
                         <ToggleButton
-                          className={desktop ? "" : classes.smallToggleButton}
+                          className={
+                            screenSize >= 3 ? "" : classes.smallToggleButton
+                          }
                           value="w"
                           aria-label="last week"
                           disabled={interval === "1mo"}
                         >
                           <Typography>
-                            {desktop ? <b>1W</b> : <span>1W</span>}
+                            {screenSize >= 3 ? <b>1W</b> : <span>1W</span>}
                           </Typography>
                         </ToggleButton>
                         <ToggleButton
-                          className={desktop ? "" : classes.smallToggleButton}
+                          className={
+                            screenSize >= 3 ? "" : classes.smallToggleButton
+                          }
                           value="M"
                           aria-label="last month"
                         >
                           <Typography>
-                            {desktop ? <b>1M</b> : <span>1M</span>}
+                            {screenSize >= 3 ? <b>1M</b> : <span>1M</span>}
                           </Typography>
                         </ToggleButton>
                         <ToggleButton
-                          className={desktop ? "" : classes.smallToggleButton}
+                          className={
+                            screenSize >= 3 ? "" : classes.smallToggleButton
+                          }
                           value="y"
                           aria-label="last year"
                         >
                           <Typography>
-                            {desktop ? <b>1Y</b> : <span>1Y</span>}
+                            {screenSize >= 3 ? <b>1Y</b> : <span>1Y</span>}
                           </Typography>
                         </ToggleButton>
                       </ToggleButtonGroup>
@@ -210,7 +216,7 @@ const DataView = ({
                     <Grid item xs="auto">
                       <Typography
                         className={
-                          desktop
+                          screenSize >= 3
                             ? classes.buttonGroupOverline
                             : classes.buttonGroupOverlineSmall
                         }
@@ -229,31 +235,37 @@ const DataView = ({
                         aria-label="Point interval"
                       >
                         <ToggleButton
-                          className={desktop ? "" : classes.smallToggleButton}
+                          className={
+                            screenSize >= 3 ? "" : classes.smallToggleButton
+                          }
                           value="1d"
                           aria-label="per day"
                         >
                           <Typography>
-                            {desktop ? <b>1D</b> : <span>1D</span>}
+                            {screenSize >= 3 ? <b>1D</b> : <span>1D</span>}
                           </Typography>
                         </ToggleButton>
                         <ToggleButton
-                          className={desktop ? "" : classes.smallToggleButton}
+                          className={
+                            screenSize >= 3 ? "" : classes.smallToggleButton
+                          }
                           value="1wk"
                           aria-label="per week"
                         >
                           <Typography>
-                            {desktop ? <b>1W</b> : <span>1W</span>}
+                            {screenSize >= 3 ? <b>1W</b> : <span>1W</span>}
                           </Typography>
                         </ToggleButton>
                         <ToggleButton
-                          className={desktop ? "" : classes.smallToggleButton}
+                          className={
+                            screenSize >= 3 ? "" : classes.smallToggleButton
+                          }
                           value="1mo"
                           aria-label="per month"
                           disabled={timePeriod === "w"}
                         >
                           <Typography>
-                            {desktop ? <b>1M</b> : <span>1M</span>}
+                            {screenSize >= 3 ? <b>1M</b> : <span>1M</span>}
                           </Typography>
                         </ToggleButton>
                       </ToggleButtonGroup>
@@ -271,19 +283,20 @@ const DataView = ({
           {
             polar: (
               <PolarChart
-                desktop={desktop}
+                screenSize={screenSize}
                 holdingsArray={Array.from(holdings.values())}
               />
             ),
-            line: <LineChart desktop={desktop} holdings={holdings} />,
-            holdings: desktop ? (
-              <PolarChart
-                desktop={desktop}
-                holdingsArray={Array.from(holdings.values())}
-              />
-            ) : (
-              holdingsList
-            ),
+            line: <LineChart screenSize={screenSize} holdings={holdings} />,
+            holdings:
+              screenSize >= 3 ? (
+                <PolarChart
+                  screenSize={screenSize}
+                  holdingsArray={Array.from(holdings.values())}
+                />
+              ) : (
+                holdingsList
+              ),
           }[viewType]
         }
       </Grid>

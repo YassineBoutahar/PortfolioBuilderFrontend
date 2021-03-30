@@ -9,7 +9,8 @@ const red = "#f00";
 const grey = "#787878";
 
 const PriceChange = ({
-  mobile = false,
+  screenSize,
+  fullText = false,
   currentPrice,
   previousPrice,
 }: PriceChangeProps) => {
@@ -25,7 +26,7 @@ const PriceChange = ({
       return `Retrieval error`;
     }
 
-    return mobile
+    return !fullText
       ? `$${currentPrice.toFixed(2)}`
       : `$${currentPrice.toFixed(2)} ${sign}${difference.toFixed(
           2
@@ -34,6 +35,7 @@ const PriceChange = ({
 
   return (
     <Typography
+      noWrap
       style={{
         verticalAlign: "middle",
         display: "inline-flex",

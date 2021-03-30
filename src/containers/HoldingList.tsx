@@ -4,7 +4,7 @@ import { Holding, HoldingListProps } from "types";
 import { List, Box, Typography } from "@material-ui/core";
 
 const HoldingList = ({
-  desktop,
+  screenSize,
   holdingsArray,
   portfolioValue,
   insertHolding,
@@ -26,7 +26,7 @@ const HoldingList = ({
       {holdingsArray.map((holding: Holding) => {
         return (
           <SingleHolding
-            desktop={desktop}
+            screenSize={screenSize}
             holding={holding}
             portfolioValue={portfolioValue}
             insertHolding={insertHolding}

@@ -10,6 +10,15 @@ const darkTheme = createMuiTheme({
   palette: {
     type: "dark",
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 520,
+      md: 750,
+      lg: 1200,
+      xl: 1450,
+    },
+  },
 });
 
 interface ShareProps extends RouteComponentProps {

@@ -44,7 +44,7 @@ const useStyles = makeStyles({
 });
 
 const PortfolioControls = ({
-  desktop,
+  screenSize,
   holdings,
   totalValue,
   setTotalValue,
@@ -169,16 +169,16 @@ const PortfolioControls = ({
             justify="space-between"
             wrap="nowrap"
           >
-            {desktop && (
-              <Grid item xs={4}>
-                <SiteLogo />
+            {screenSize >= 2 && (
+              <Grid item xs="auto">
+                <SiteLogo screenSize={screenSize} />
               </Grid>
             )}
-            <Grid item xs={8}>
+            <Grid item xs="auto">
               <Grid
                 container
                 spacing={2}
-                justify={desktop ? "center" : "flex-start"}
+                justify={screenSize >= 3 ? "center" : "flex-start"}
                 alignItems="flex-end"
                 wrap="nowrap"
               >
@@ -234,7 +234,11 @@ const PortfolioControls = ({
                 <Grid item xs="auto">
                   <NumberFormat
                     value={totalValue}
-                    label={`${desktop ? "Total " : ""}Portfolio Value`}
+                    label={
+                      <Typography noWrap>
+                        {screenSize >= 3 ? "Total " : ""}Portfolio Value
+                      </Typography>
+                    }
                     onValueChange={({ value: v }) =>
                       setTotalValue(parseFloat(v))
                     }

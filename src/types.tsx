@@ -14,7 +14,7 @@ export interface Holding {
 }
 
 export interface HoldingListProps {
-  desktop: boolean;
+  screenSize: number;
   holdingsArray: Holding[];
   portfolioValue: number;
   insertHolding: (
@@ -28,7 +28,7 @@ export interface HoldingListProps {
 }
 
 export interface SingleHoldingProps {
-  desktop: boolean;
+  screenSize: number;
   holding: Holding;
   portfolioValue: number;
   insertHolding: (
@@ -47,7 +47,7 @@ export interface LocalStorageItem {
 }
 
 export interface DataViewProps {
-  desktop: boolean;
+  screenSize: number;
   holdingsList?: React.ReactNode;
   holdings: Map<string, Holding>;
   timePeriod: "y" | "M" | "w";
@@ -62,17 +62,18 @@ export interface DataViewProps {
 }
 
 export interface LineChartProps {
-  desktop: boolean;
+  screenSize: number;
   holdings: Map<string, Holding>;
 }
 
 export interface PolarChartProps {
-  desktop: boolean;
+  screenSize: number;
   holdingsArray: Holding[];
 }
 
 export interface PriceChangeProps {
-  mobile?: boolean;
+  screenSize: number;
+  fullText?: boolean;
   currentPrice: number;
   previousPrice: number;
 }
@@ -87,10 +88,14 @@ export interface AppProps {
 }
 
 export interface PortfolioControlsProps {
-  desktop: boolean;
+  screenSize: number;
   holdings: Map<string, Holding>;
   totalValue: number | null;
   setTotalValue: Dispatch<SetStateAction<number | null>>;
   addQuote: (ticker: string) => void;
   updateAllQuotes: () => void;
+}
+
+export interface SiteLogoProps {
+  screenSize: number;
 }
