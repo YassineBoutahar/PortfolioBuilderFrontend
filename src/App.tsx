@@ -38,7 +38,6 @@ const App = ({ urlShareHash }: AppProps) => {
   else if (lg) screenSize = 3;
   else if (md) screenSize = 2;
   else if (sm) screenSize = 1;
-  console.log(screenSize);
   const [totalValue, setTotalValue] = useState<number | null>(null);
   const [holdings, setHoldings] = useState<Map<string, Holding>>(new Map());
   // const [remainingPercent, setRemainingPercent] = useState<number>(100);
